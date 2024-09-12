@@ -33,6 +33,7 @@ public class ReactiveJwtAuthenticationConverter implements ServerAuthenticationC
             if (username != null) {
                 return userDetailsService.findByUsername(username)
                         .flatMap(userDetails -> {
+                            // Use the correct validateToken method that requires UserDetails
                             if (jwtUtil.validateToken(jwt, userDetails)) {
                                 // Create an Authentication object and return it wrapped in a Mono
                                 return Mono.just(new UsernamePasswordAuthenticationToken(
@@ -48,4 +49,5 @@ public class ReactiveJwtAuthenticationConverter implements ServerAuthenticationC
         // Return an empty Mono if no valid token is found
         return Mono.empty();
     }
+
 }

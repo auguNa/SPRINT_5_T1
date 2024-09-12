@@ -17,8 +17,8 @@ import java.util.List;
 @Service
 public class GameService {
 
-    private final GameRepository gameRepository;   // MongoDB repository for games
-    private final PlayerRepository playerRepository;  // MySQL repository for players
+    private final GameRepository gameRepository;
+    private final PlayerRepository playerRepository;
 
     @Autowired
     public GameService(GameRepository gameRepository, PlayerRepository playerRepository) {

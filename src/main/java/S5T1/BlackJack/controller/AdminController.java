@@ -48,7 +48,6 @@ public class AdminController {
     public Flux<UserEntity> getAllUsers(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
-
         return userService.getAllUsers()
                 .doOnNext(users -> log.info("Fetched users for admin: {}", username))
                 .onErrorResume(e -> Flux.empty());

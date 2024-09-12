@@ -3,8 +3,10 @@ package S5T1.BlackJack;
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
+@ComponentScan(basePackages = "S5T1.BlackJack")
 public class BlackJackApplication {
 
 	public static void main(String[] args) {
@@ -15,5 +17,4 @@ public class BlackJackApplication {
 
 		SpringApplication.run(BlackJackApplication.class, args);
 	}
-
 }

@@ -1,6 +1,7 @@
 package S5T1.BlackJack.util;
 
 import S5T1.BlackJack.service.CustomUserDetailsService;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.ReactiveAuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -27,13 +28,13 @@ public class CustomReactiveAuthenticationManager implements ReactiveAuthenticati
         return userDetailsService.findByUsername(username)
                 .flatMap(userDetails -> {
                     if (jwtUtil.validateToken(token, userDetails)) {
-                        // Return an authenticated token if the JWT is valid
                         Authentication auth = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
                         return Mono.just(auth);
                     } else {
-                        return Mono.empty(); // or Mono.error(new BadCredentialsException("Invalid JWT"));
+                        return Mono.empty();  // Return empty if token validation fails
                     }
-                });
+                })
+                .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid token or user credentials")));
     }
 }

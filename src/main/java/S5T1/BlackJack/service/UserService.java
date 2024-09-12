@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
+import java.util.HashSet;
+
 @Service
 public class UserService {
 
@@ -35,7 +38,7 @@ public class UserService {
     public Mono<Void> createUser(UserEntity userEntity) {
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         return Mono.fromRunnable(() -> userRepository.save(userEntity))
-                .then(); // Complete the Mono<Void> after saving
+                .then();
     }
 
     // Update existing user
@@ -46,9 +49,8 @@ public class UserService {
                     if (updatedUserEntity.getPassword() != null && !updatedUserEntity.getPassword().isEmpty()) {
                         userEntity.setPassword(passwordEncoder.encode(updatedUserEntity.getPassword()));
                     }
-                    userEntity.setRoles(updatedUserEntity.getRoles());
-                    return Mono.fromRunnable(() -> userRepository.save(userEntity))
-                            .then(); // Complete the Mono<Void> after saving
+                    userEntity.setRoles(new HashSet<>(updatedUserEntity.getRoles())); // Create a new mutable set
+                    return userRepository.save(userEntity).then(); // Save user and then complete
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("User not found with ID: " + userId)));
     }
@@ -57,11 +59,15 @@ public class UserService {
     public Mono<Void> deleteUser(Long userId) {
         return userRepository.findById(userId)
                 .flatMap(userEntity -> {
-                    userEntity.getRoles().clear(); // This will remove all roles associations with the user
-                    return Mono.fromRunnable(() -> {
-                        userRepository.save(userEntity); // Save the user entity to apply the changes
-                        userRepository.delete(userEntity); // Delete the user entity
-                    }).then(); // Complete the Mono<Void> after saving and deleting
+                    // Create a new user entity with cleared roles
+                    UserEntity updatedUser = new UserEntity();
+                    updatedUser.setId(userEntity.getId());
+                    updatedUser.setUsername(userEntity.getUsername());
+                    updatedUser.setPassword(userEntity.getPassword());
+                    updatedUser.setRoles(Collections.emptySet()); // Clear roles with a new set
+
+                    return userRepository.save(updatedUser)
+                            .then(userRepository.delete(updatedUser)); // Save and then delete
                 })
                 .switchIfEmpty(Mono.error(new RuntimeException("User not found with ID: " + userId)));
     }

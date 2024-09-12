@@ -1,6 +1,5 @@
-package S5T1.BlackJack.repository;
+package S5T1.BlackJack.util;
 
-import S5T1.BlackJack.util.ReactiveJwtAuthenticationConverter;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.web.server.context.ServerSecurityContextRepository;

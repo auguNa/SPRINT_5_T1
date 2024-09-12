@@ -1,6 +1,5 @@
 package S5T1.BlackJack.controller;
 
-
 import S5T1.BlackJack.dto.AuthRequest;
 import S5T1.BlackJack.entity.UserEntity;
 import S5T1.BlackJack.service.AuthService;
@@ -23,9 +22,11 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
+
+    // Register user
     @PostMapping("/register")
-    public Mono<ResponseEntity<String>> register(@RequestBody AuthRequest authRequest) {
-        return authService.registerAdmin(authRequest.getUsername(), authRequest.getPassword())
+    public Mono<ResponseEntity<String>> registerUser(@RequestBody AuthRequest authRequest) {
+        return authService.registerUser(authRequest.getUsername(), authRequest.getPassword())
                 .then(Mono.just(ResponseEntity.status(HttpStatus.CREATED).body("User registered successfully")))
                 .onErrorResume(e -> {
                     log.error("Error during registration: ", e);
@@ -60,5 +61,4 @@ public class AuthController {
                         })
                 );
     }
-
 }

@@ -11,4 +11,10 @@ public class AuthRequest {
     private String username;
     private String password;
     private Set<String> roles;
+
+    public AuthRequest(String username, String password) {
+        this.username = username;
+        this.password = password;
+
+    }
 }

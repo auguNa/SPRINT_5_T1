@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Table("user_entity")
 @Data
@@ -24,6 +25,13 @@ public class UserEntity {
     @Column("password")
     private String password;
 
-    @Column("roles")  // Ensure this is a Set<String>
-    private Set<String> roles;
+    @Column("roles")
+    private String roles;
+    public Set<String> getRoles() {
+        return roles == null || roles.isEmpty() ? Set.of() : Set.of(roles.split(","));
+    }
+
+    public void setRoles(Set<String> roles) {
+        this.roles = roles == null ? "" : String.join(",", roles);
+    }
 }
