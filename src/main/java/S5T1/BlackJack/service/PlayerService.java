@@ -1,7 +1,6 @@
 package S5T1.BlackJack.service;
 
 import S5T1.BlackJack.entity.Player;
-import S5T1.BlackJack.exception.GlobalExceptionHandler;
 import S5T1.BlackJack.exception.PlayerNotFoundException;
 import S5T1.BlackJack.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class PlayerService {
 //        Player player = new Player(name, 0, 0);
 //        return playerRepository.save(player);
 //    }
-    public Mono<Player> findPlayerByName(String name) {
+    public Mono<Player> findByName(String name) {
         return playerRepository.findByName(name);
     }
     public Mono<Player> changePlayerName(String playerId, String newName) {
@@ -54,5 +53,20 @@ public class PlayerService {
     public Flux<Player> getPlayerRanking() {
         return playerRepository.findAll()
                 .sort((p1, p2) -> Integer.compare(p2.getWins(), p1.getWins()));
+    }
+    public Mono<Player> getPlayerById(String playerId) {
+        return playerRepository.findById(playerId);
+    }
+
+    public Flux<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
+
+    public Mono<Player> createOrUpdatePlayer(Player player) {
+        return playerRepository.save(player);
+    }
+
+    public Mono<Void> deletePlayer(String playerId) {
+        return playerRepository.deleteById(playerId);
     }
 }

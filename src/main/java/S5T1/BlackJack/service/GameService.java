@@ -21,28 +21,25 @@ import java.util.List;
 @Service
 public class GameService {
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
+
     private final GameRepository gameRepository;
-    private final PlayerRepository playerRepository;
+    private final PlayerService playerService; ;
 
     @Autowired
-    public GameService(GameRepository gameRepository, PlayerRepository playerRepository) {
+    public GameService(GameRepository gameRepository,  PlayerService playerService) {
         this.gameRepository = gameRepository;
-        this.playerRepository = playerRepository;
+        this.playerService = playerService;
     }
 
     // --- MongoDB Interactions: Managing Blackjack Games ---
 
     public Mono<Game> createNewGame(String playerName) {
-        return playerRepository.findByName(playerName)
-                .switchIfEmpty(Mono.defer(() -> {
-                    // Create a new player and save it to the database
-                    Player newPlayer = new Player(playerName, 0, 0);
-                    return playerRepository.save(newPlayer); // This will ensure the player gets an id
-                }))
+        return playerService.findByName(playerName)
+                .switchIfEmpty(playerService.createPlayerWithCustomId(new Player(playerName, 0, 0))) // Use PlayerService to create the player
                 .flatMap(player -> {
                     // Now that the player has been saved and has an id, proceed to create the game
                     Game game = new Game();
-                    game.setPlayerId(player.getId()); // Set the player's id in the game
+                    game.setPlayerId(player.getId());
                     game.setPlayerName(player.getName());
 
                     // Initialize a new deck and deal two cards to player and dealer
@@ -121,7 +118,6 @@ public class GameService {
         return gameRepository.save(game);
     }
 
-
     private Mono<Game> handleStand(Game game) {
         Deck deck = game.getDeck();
         int dealerScore = calculateScore(game.getDealerHand());
@@ -172,26 +168,23 @@ public class GameService {
         }
     }
 
-    // --- MySQL Interactions: Managing Players ---
-
     public Mono<Player> getPlayerById(String playerId) {
-        return playerRepository.findById(playerId);
+        return playerService.getPlayerById(playerId);
     }
 
     public Flux<Player> getAllPlayers() {
-        return playerRepository.findAll();
-    }
-
-    public Mono<Player> createOrUpdatePlayer(Player player) {
-        return playerRepository.save(player);
-    }
-
-    public Mono<Void> deletePlayer(String playerId) {
-        return playerRepository.deleteById(playerId);
+        return playerService.getAllPlayers();
     }
 
     public Flux<Player> getPlayerRanking() {
-        return playerRepository.findAll()
-                .sort((p1, p2) -> Integer.compare(p2.getWins(), p1.getWins()));  // Sort by wins in descending order
+        return playerService.getPlayerRanking();
     }
+
+    public Mono<Player> createOrUpdatePlayer(Player player) {
+        return playerService.createOrUpdatePlayer(player);
+    }
+    public Mono<Void> deletePlayer(String playerId) {
+        return playerService.deletePlayer(playerId);
+    }
+
 }
