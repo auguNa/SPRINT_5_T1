@@ -3,20 +3,20 @@ package S5T1.BlackJack.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import lombok.Getter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.relational.core.mapping.Table;
-import org.springframework.data.relational.core.mapping.Column;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 import java.util.Set;
 
-@Table("user_entity")
+@Table(name = "users")
 @Data
 @Entity
-@NoArgsConstructor
 @AllArgsConstructor
+
 public class UserEntity {
 
     @Id
@@ -24,17 +24,14 @@ public class UserEntity {
     private Long id;
 
     @Column("username")
+    @Getter
     private String username;
 
+    @Column("password")
+    @Getter
+    private String password;
 
-    @Column("roles")
-    private String roles;
+    public UserEntity() {
 
-    public Set<String> getRoles() {
-        return roles == null || roles.isEmpty() ? Set.of() : Set.of(roles.split(","));
-    }
-
-    public void setRoles(Set<String> roles) {
-        this.roles = roles == null ? "" : String.join(",", roles);
     }
 }
