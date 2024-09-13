@@ -15,18 +15,15 @@ public class Player {
     private int wins;
     private int losses;
 
-    // Default constructor
     public Player() {
     }
 
-    // Parameterized constructor
     public Player(String name, int wins, int losses) {
         this.name = name;
         this.wins = wins;
         this.losses = losses;
     }
 
-    // Getters and setters
     public String  getId() {
         return id;
     }

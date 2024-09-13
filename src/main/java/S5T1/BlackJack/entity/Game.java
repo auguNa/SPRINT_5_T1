@@ -15,6 +15,7 @@ import java.util.List;
 public class Game {
     @Id
     private String id;
+    private String playerId;
     private String playerName;
     private List<Card> dealerHand;
     private List<Card> playerHand;

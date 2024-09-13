@@ -4,19 +4,23 @@ import S5T1.BlackJack.entity.Card;
 import S5T1.BlackJack.entity.Deck;
 import S5T1.BlackJack.entity.Game;
 import S5T1.BlackJack.entity.Player;
+import S5T1.BlackJack.exception.CustomException;
+import S5T1.BlackJack.exception.GameNotFoundException;
 import S5T1.BlackJack.repository.GameRepository;
 import S5T1.BlackJack.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class GameService {
-
+    private static final Logger log = LoggerFactory.getLogger(GameService.class);
     private final GameRepository gameRepository;
     private final PlayerRepository playerRepository;
 
@@ -29,34 +33,48 @@ public class GameService {
     // --- MongoDB Interactions: Managing Blackjack Games ---
 
     public Mono<Game> createNewGame(String playerName) {
-        Game game = new Game();
-        game.setPlayerName(playerName);
+        return playerRepository.findByName(playerName)
+                .switchIfEmpty(Mono.defer(() -> {
+                    // Create a new player and save it to the database
+                    Player newPlayer = new Player(playerName, 0, 0);
+                    return playerRepository.save(newPlayer); // This will ensure the player gets an id
+                }))
+                .flatMap(player -> {
+                    // Now that the player has been saved and has an id, proceed to create the game
+                    Game game = new Game();
+                    game.setPlayerId(player.getId()); // Set the player's id in the game
+                    game.setPlayerName(player.getName());
 
-        // Initialize a new deck and deal two cards to player and dealer
-        Deck deck = new Deck();
-        List<Card> playerHand = new ArrayList<>();
-        List<Card> dealerHand = new ArrayList<>();
+                    // Initialize a new deck and deal two cards to player and dealer
+                    Deck deck = new Deck();
+                    List<Card> playerHand = new ArrayList<>();
+                    List<Card> dealerHand = new ArrayList<>();
 
-        playerHand.add(deck.drawCard());
-        playerHand.add(deck.drawCard());
+                    playerHand.add(deck.drawCard());
+                    playerHand.add(deck.drawCard());
 
-        dealerHand.add(deck.drawCard());
-        dealerHand.add(deck.drawCard());
+                    dealerHand.add(deck.drawCard());
+                    dealerHand.add(deck.drawCard());
 
-        game.setPlayerHand(playerHand);
-        game.setDealerHand(dealerHand);
-        game.setStatus("IN_PROGRESS");
-        game.setDeck(deck);
+                    game.setPlayerHand(playerHand);
+                    game.setDealerHand(dealerHand);
+                    game.setStatus("IN_PROGRESS");
+                    game.setDeck(deck);
 
-        return gameRepository.save(game);
+                    return gameRepository.save(game)
+                            .onErrorMap(e -> new CustomException("Error while creating game", e));
+                });
     }
 
     public Mono<Game> getGameById(String id) {
-        return gameRepository.findById(id);
+        return gameRepository.findById(id)
+                .switchIfEmpty(Mono.error(new GameNotFoundException("Game not found with ID: " + id)));
     }
+
 
     public Mono<Game> makeMove(String id, String moveType) {
         return gameRepository.findById(id)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Invalid game ID")))
                 .flatMap(game -> {
                     if (!"IN_PROGRESS".equals(game.getStatus())) {
                         return Mono.error(new IllegalStateException("Game is already over"));
@@ -69,6 +87,10 @@ public class GameService {
                     } else {
                         return Mono.error(new IllegalArgumentException("Invalid move type"));
                     }
+                })
+                .onErrorResume(e -> {
+                    // Handle specific exceptions or return a fallback Mono
+                    return Mono.error(new CustomException("An error occurred while making a move", e));
                 });
     }
 
@@ -77,9 +99,18 @@ public class GameService {
     }
 
     private Mono<Game> handleHit(Game game) {
+        log.debug("Handling hit for game ID: {}", game.getId());
         Deck deck = game.getDeck();
+
+        // Ensure deck is not null
+        if (deck == null) {
+            return Mono.error(new IllegalStateException("Deck not initialized"));
+        }
+
+        // Add a new card to the player's hand
         game.getPlayerHand().add(deck.drawCard());
 
+        // Calculate the player's score and update game status
         int playerScore = calculateScore(game.getPlayerHand());
         if (playerScore > 21) {
             game.setStatus("DEALER_WON");
@@ -89,6 +120,7 @@ public class GameService {
 
         return gameRepository.save(game);
     }
+
 
     private Mono<Game> handleStand(Game game) {
         Deck deck = game.getDeck();
@@ -117,7 +149,6 @@ public class GameService {
                 aceCount++;
             }
         }
-
         // Adjust for Aces if needed (Ace can be 1 or 11)
         while (total > 21 && aceCount > 0) {
             total -= 10;

@@ -3,6 +3,7 @@ package S5T1.BlackJack.controller;
 import S5T1.BlackJack.entity.Game;
 import S5T1.BlackJack.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
@@ -14,9 +15,11 @@ public class GameController {
     private GameService gameService;
 
     @PostMapping("/new")
-    public Mono<Game> createNewGame(@RequestParam String playerName) {
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<Game> createNewGame(@RequestBody String playerName) {
         return gameService.createNewGame(playerName);
     }
+
 
     @GetMapping("/{id}")
     public Mono<Game> getGameDetails(@PathVariable String id) {
@@ -29,6 +32,7 @@ public class GameController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public Mono<Void> deleteGame(@PathVariable String id) {
         return gameService.deleteGame(id);
     }

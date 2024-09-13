@@ -1,7 +1,6 @@
 package S5T1.BlackJack.entity;
 
 import lombok.Data;
-
 import java.util.Collections;
 import java.util.Stack;
 
@@ -28,6 +27,9 @@ public class Deck {
     }
 
     public Card drawCard() {
+        if (cards.isEmpty()) {
+            throw new IllegalStateException("No more cards in the deck");
+        }
         return cards.pop();
     }
 }

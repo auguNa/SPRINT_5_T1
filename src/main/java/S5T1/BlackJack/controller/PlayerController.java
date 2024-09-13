@@ -19,7 +19,7 @@ public class PlayerController {
     }
 
     @PutMapping("/{playerId}")
-    public Mono<Player> changePlayerName(@PathVariable String playerId, @RequestParam String newName) {
+    public Mono<Player> changePlayerName(@PathVariable String playerId, @RequestBody String newName) {
         return playerService.changePlayerName(playerId, newName);
     }
 

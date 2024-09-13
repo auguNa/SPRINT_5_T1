@@ -34,12 +34,6 @@
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
-		<!-- Spring Security -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>
-
 		<!-- Reactive MongoDB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -50,7 +44,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
-			<version>3.3.3</version>
 		</dependency>
 
 		<!-- Lombok (Optional) -->
@@ -58,51 +51,6 @@
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
-		</dependency>
-
-		<!-- JWT Support -->
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>0.11.2</version>
-		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-impl</artifactId>
-			<version>0.11.2</version>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>0.11.2</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- SpringDoc OpenAPI for WebFlux -->
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webflux-ui</artifactId>
-			<version>2.1.0</version>
-		</dependency>
-
-		<!-- Testing dependencies -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Reactor Core -->
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-core</artifactId>
-			<version>3.6.9</version>
 		</dependency>
 
 		<!-- dotenv support -->
@@ -125,23 +73,23 @@
 			<artifactId>r2dbc-pool</artifactId>
 		</dependency>
 
-		<!-- Spring Data Relational (for JPA-like support) -->
+		<!-- Testing dependencies -->
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-relational</artifactId>
-			<version>3.3.3</version>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
-
 		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-commons</artifactId>
-			<version>3.3.3</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-relational</artifactId>
-			<version>3.3.2</version>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -150,6 +98,7 @@
 			<version>5.8.1</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-engine</artifactId>
@@ -164,17 +113,11 @@
 			<version>3.9.0</version>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-junit-jupiter</artifactId>
 			<version>3.9.0</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- Spring Boot Test -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
 
@@ -184,12 +127,21 @@
 			<version>1.2.0</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
 
-    </dependencies>
+		<!-- JPA (For Entities) -->
+		<dependency>
+			<groupId>jakarta.persistence</groupId>
+			<artifactId>jakarta.persistence-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>io.projectreactor</groupId>
+			<artifactId>reactor-core</artifactId>
+		</dependency>
+
+
+	</dependencies>
 
 	<build>
 		<plugins>
