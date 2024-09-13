@@ -11,6 +11,7 @@ public class Player {
     @Id
     private String  id;
 
+    private String userId;
     private String name;
     private int wins;
     private int losses;

@@ -8,4 +8,5 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface PlayerRepository extends ReactiveMongoRepository<Player, String> {
     Mono<Player> findByName(String name);
+    Mono<Player> findByUserId(String userId);
 }

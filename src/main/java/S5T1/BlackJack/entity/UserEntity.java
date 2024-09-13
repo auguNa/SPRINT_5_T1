@@ -21,7 +21,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String  id;
 
     @Column("username")
     @Getter
@@ -33,5 +33,8 @@ public class UserEntity {
 
     public UserEntity() {
 
+    }
+
+    public UserEntity(String username, String password) {
     }
 }
