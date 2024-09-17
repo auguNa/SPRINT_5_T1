@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  app:
+    image: blackjack-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql
+      - mongo
+    environment:
+      - SPRING_DATASOURCE_URL=r2dbc:mysql://mysql:3306/blackjack
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=Augu82
+      - SPRING_DATA_MONGODB_URI=mongodb://mongo:27017/blackjack
+    networks:
+      - blackjack-net
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Augu82
+      MYSQL_DATABASE: blackjack
+    ports:
+      - "3306:3306"
+    networks:
+      - blackjack-net
+
+  mongo:
+    image: mongo:6
+    ports:
+      - "27018:27017"
+    networks:
+      - blackjack-net
+
+networks:
+  blackjack-net:
+    driver: bridge

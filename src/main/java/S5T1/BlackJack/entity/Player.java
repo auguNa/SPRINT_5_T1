@@ -1,18 +1,30 @@
 package S5T1.BlackJack.entity;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 @Data
-@Document(collection = "players")
+@Table("players")
+@Getter
+@Setter
 public class Player {
 
+    @Setter
+    @Getter
     @Id
-    private String  id;
+    private Long id;
 
-    private String userId;
+    @Column("name")
     private String name;
+
+    @Column("score")
+    private Integer score;
+
     private int wins;
     private int losses;
 
@@ -22,38 +34,6 @@ public class Player {
     public Player(String name, int wins, int losses) {
         this.name = name;
         this.wins = wins;
-        this.losses = losses;
-    }
-
-    public String  getId() {
-        return id;
-    }
-
-    public void setId(String  id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getWins() {
-        return wins;
-    }
-
-    public void setWins(int wins) {
-        this.wins = wins;
-    }
-
-    public int getLosses() {
-        return losses;
-    }
-
-    public void setLosses(int losses) {
         this.losses = losses;
     }
 }

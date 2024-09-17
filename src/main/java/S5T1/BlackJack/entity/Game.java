@@ -16,13 +16,11 @@ public class Game {
     @Id
     private String id;
     private String playerId;
-    private String playerName;
     private List<Card> dealerHand;
     private List<Card> playerHand;
     private String status;
     private int bet;
     private Deck deck;
-
 }
 
 

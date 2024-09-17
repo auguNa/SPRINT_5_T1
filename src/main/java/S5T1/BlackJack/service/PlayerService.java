@@ -19,26 +19,18 @@ public class PlayerService {
     public PlayerService(PlayerRepository playerRepository) {
         this.playerRepository = playerRepository;
     }
-    public Mono<Player> createPlayerWithCustomId(Player player) {
-        return playerRepository.findAll()
-                .filter(p -> p.getId().startsWith("player"))
-                .map(p -> Integer.parseInt(p.getId().substring(6)))  // Extract the numeric part of the ID
-                .defaultIfEmpty(0)  // If no players exist, start from 0
-                .collectList()
-                .flatMap(existingIds -> {
-                    int newIdNumber = existingIds.isEmpty() ? 1 : Collections.max(existingIds) + 1;
-                    String newPlayerId = "player" + newIdNumber;
-                    player.setId(newPlayerId);  // Set the custom ID
-                    return playerRepository.save(player);
-                });
+
+    public Mono<Player> savePlayer(Player player) {
+        return playerRepository.save(player);
     }
+
 
     public Mono<Player> findByName(String name) {
         return playerRepository.findByName(name);
     }
-    public Mono<Player> changePlayerName(String playerId, String newName) {
-        return playerRepository.findById(playerId)
-                .switchIfEmpty(Mono.error(new PlayerNotFoundException("Player not found with ID: " + playerId)))
+
+    public Mono<Player> updatePlayer(Long id, String newName) {
+        return playerRepository.findById(id)
                 .flatMap(player -> {
                     player.setName(newName);
                     return playerRepository.save(player);
@@ -49,8 +41,9 @@ public class PlayerService {
         return playerRepository.findAll()
                 .sort((p1, p2) -> Integer.compare(p2.getWins(), p1.getWins()));
     }
+
     public Mono<Player> getPlayerById(String playerId) {
-        return playerRepository.findById(playerId);
+        return playerRepository.findById(Long.valueOf(playerId));
     }
 
     public Flux<Player> getAllPlayers() {
@@ -61,7 +54,7 @@ public class PlayerService {
         return playerRepository.save(player);
     }
 
-    public Mono<Void> deletePlayer(String playerId) {
-        return playerRepository.deleteById(playerId);
+    public Mono<Void> deletePlayer(Long id) {
+        return playerRepository.deleteById(id).then();
     }
 }

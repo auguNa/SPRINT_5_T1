@@ -7,7 +7,6 @@ import S5T1.BlackJack.entity.Player;
 import S5T1.BlackJack.exception.CustomException;
 import S5T1.BlackJack.exception.GameNotFoundException;
 import S5T1.BlackJack.repository.GameRepository;
-import S5T1.BlackJack.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
@@ -23,45 +22,56 @@ public class GameService {
     private static final Logger log = LoggerFactory.getLogger(GameService.class);
 
     private final GameRepository gameRepository;
-    private final PlayerService playerService; ;
+    private final PlayerService playerService;
+
+
 
     @Autowired
-    public GameService(GameRepository gameRepository,  PlayerService playerService) {
+    public GameService(GameRepository gameRepository, PlayerService playerService) {
         this.gameRepository = gameRepository;
         this.playerService = playerService;
-    }
+         }
 
     // --- MongoDB Interactions: Managing Blackjack Games ---
-
     public Mono<Game> createNewGame(String playerName) {
+        // Find or create player
         return playerService.findByName(playerName)
-                .switchIfEmpty(playerService.createPlayerWithCustomId(new Player(playerName, 0, 0))) // Use PlayerService to create the player
+                .switchIfEmpty(Mono.defer(() -> {
+                    // Player not found, create and save new player
+                    Player newPlayer = new Player();
+                    newPlayer.setName(playerName);
+                    newPlayer.setScore(0);
+                    return playerService.savePlayer(newPlayer);
+                }))
                 .flatMap(player -> {
                     // Now that the player has been saved and has an id, proceed to create the game
                     Game game = new Game();
-                    game.setPlayerId(player.getId());
-                    game.setPlayerName(player.getName());
 
                     // Initialize a new deck and deal two cards to player and dealer
                     Deck deck = new Deck();
                     List<Card> playerHand = new ArrayList<>();
                     List<Card> dealerHand = new ArrayList<>();
 
+                    // Draw cards
                     playerHand.add(deck.drawCard());
                     playerHand.add(deck.drawCard());
 
                     dealerHand.add(deck.drawCard());
                     dealerHand.add(deck.drawCard());
 
+                    // Set game details
                     game.setPlayerHand(playerHand);
                     game.setDealerHand(dealerHand);
                     game.setStatus("IN_PROGRESS");
                     game.setDeck(deck);
+                    game.setPlayerId(String.valueOf(player.getId())); // Assuming you want to associate the game with the player
 
-                    return gameRepository.save(game)
+                    return gameRepository.save(game)  // Save the game in MongoDB
                             .onErrorMap(e -> new CustomException("Error while creating game", e));
                 });
     }
+
+
 
     public Mono<Game> getGameById(String id) {
         return gameRepository.findById(id)
@@ -183,7 +193,8 @@ public class GameService {
     public Mono<Player> createOrUpdatePlayer(Player player) {
         return playerService.createOrUpdatePlayer(player);
     }
-    public Mono<Void> deletePlayer(String playerId) {
+
+    public Mono<Void> deletePlayer(Long playerId) {
         return playerService.deletePlayer(playerId);
     }
 

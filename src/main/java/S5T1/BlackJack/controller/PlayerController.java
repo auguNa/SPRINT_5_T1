@@ -19,8 +19,8 @@ public class PlayerController {
     }
 
     @PutMapping("/{playerId}")
-    public Mono<Player> changePlayerName(@PathVariable String playerId, @RequestBody String newName) {
-        return playerService.changePlayerName(playerId, newName);
+    public Mono<Player> updatePlayer(@PathVariable Long playerId, @RequestBody String newName) {
+        return playerService.updatePlayer(playerId, newName);
     }
 
     @GetMapping("/ranking")
