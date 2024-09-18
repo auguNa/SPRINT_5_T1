@@ -1,4 +1,37 @@
 # Blackjack Game API
+# Blackjack Game Application
+
+This is a **reactive Blackjack game application** built using Java, Spring Boot, Spring WebFlux, and a reactive stack with **MongoDB** and **MySQL** for storing game and player data.
+
+## Features
+- Play Blackjack in a reactive environment.
+- Supports player management, game creation, game deletion, and ranking.
+- JWT-based authentication for secure endpoints.
+- Separate game and user data storage in MongoDB and MySQL, respectively.
+- Handles asynchronous operations with Reactor's `Mono` and `Flux`.
+
+## Technologies Used
+- **Java 17+**
+- **Spring Boot**
+- **Spring WebFlux**
+- **MongoDB** (for game data)
+- **MySQL** (for player)
+- **JWT Authentication**
+- **Reactive Programming with Reactor**
+- **Spring Data R2DBC**
+- **Swagger/OpenAPI** for API documentation
+
+## Prerequisites
+- Java 17 or later
+- MongoDB and MySQL installed and running
+- Maven installed
+
+## Setup
+
+### 1. Clone the repository
+```bash
+git clone https://github.com/auguNa/SPRINT_5_T1.git
+cd blackjack-game
 
 ## Setup Instructions
 
