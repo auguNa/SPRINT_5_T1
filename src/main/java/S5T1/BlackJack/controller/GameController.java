@@ -4,7 +4,6 @@ import S5T1.BlackJack.entity.Game;
 import S5T1.BlackJack.service.GameService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -14,8 +13,11 @@ import reactor.core.publisher.Mono;
 @Tag(name = "Game Controller", description = "Endpoints for managing Blackjack games")
 public class GameController {
 
-    @Autowired
-    private GameService gameService;
+    private final GameService gameService;
+
+    public GameController(GameService gameService) {
+        this.gameService = gameService;
+    }
 
     @PostMapping("/new")
     @ResponseStatus(HttpStatus.CREATED)
@@ -23,7 +25,6 @@ public class GameController {
     public Mono<Game> createNewGame(@RequestBody String playerName) {
         return gameService.createNewGame(playerName);
     }
-
 
     @GetMapping("/{id}")
     @Operation(summary = "Get game details by ID")

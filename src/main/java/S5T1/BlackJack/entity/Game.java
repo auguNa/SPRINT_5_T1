@@ -21,6 +21,9 @@ public class Game {
     private String status;
     private int bet;
     private Deck deck;
+
+    public void setPlayer(Player player) {
+    }
 }
 
 
